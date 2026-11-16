@@ -6,7 +6,7 @@
 
 <p align="center">
   The Windows habits you miss on a Mac, in one small menu bar owl.<br>
-  Keep the MacBook awake with the lid closed · clipboard history like <b>Win+V</b> · cut & paste files like <b>Ctrl+X</b>.
+  Keep the MacBook awake with the lid closed · clipboard history like <b>Win+V</b> · cut & paste files like <b>Ctrl+X</b> · show desktop like <b>Win+D</b>.
 </p>
 
 ---
@@ -17,6 +17,7 @@
 |---|---|
 | **Win+V** clipboard history | **⌥ Option+V** opens your last 25 copies (text, images, files). Press **1–9** or pick one, and it pastes. Option sits where the Windows key was. |
 | **Ctrl+X → Ctrl+V** to move files | **⌘X → ⌘V** in Finder moves the files. Normally Finder can't cut files. |
+| **Win+D** show desktop | **⌥ Option+D** clears every window off the screen. Press it again to bring them all back, or open one app from the Dock to bring back just that one. |
 | "Never sleep" power plan | **Left-click the owl** and the Mac stays fully awake, even with the lid closed and no external display. Good for AI agents, downloads and builds. |
 
 - 👀 Owl's eyes open: staying awake. 😌 Eyes closed: normal sleep.
@@ -46,7 +47,7 @@ The owl appears in your menu bar at the top right of the screen.
 
 ## First use: two one-time permissions
 
-**1. Accessibility (for the shortcuts).** On first launch macOS asks to let Owl Switch control your computer. Click **Open System Settings** and switch **Owl Switch** on under **Privacy & Security → Accessibility**. Without it, ⌥V and Finder ⌘X do nothing, but keep-awake still works.
+**1. Accessibility (for the shortcuts).** On first launch macOS asks to let Owl Switch control your computer. Click **Open System Settings** and switch **Owl Switch** on under **Privacy & Security → Accessibility**. Without it, ⌥V, ⌥D and Finder ⌘X do nothing, but keep-awake still works.
 
 **2. Admin password (for keep-awake).** The first time you turn keep-awake on, macOS asks for your password **once**. Owl Switch then installs a one-line permission file, `/etc/sudoers.d/owl-switch`, which lets your user run **only** these two commands without a password:
 
@@ -71,13 +72,13 @@ Nothing else is allowed. **Remove Keep-Awake Permission…** in the right-click 
 | Keep-awake works with the **lid closed and no external display**. `caffeinate` and most "keep awake" apps can't do this. | **Heat:** a closed laptop cools worse. Use it on a hard surface, never in a bag. |
 | Clipboard history and file cut-and-paste work like Windows, on keys your fingers already know. | **Battery:** with keep-awake on battery, it runs until empty. Plug in for long runs. |
 | Keep-awake keeps running **after you quit the app**. | That also means **it's easy to forget it's on.** Check the owl before packing the laptop. |
-| Tiny native app: no dependencies, no network, no tracking. Open source. | **Option+V no longer types √**, while clipboard history is on. |
+| Tiny native app: no dependencies, no network, no tracking. Open source. | **Option+V and Option+D no longer type √ and ∂** while those features are on. Turn either off in the right-click menu. |
 | History is memory-only and skips password-manager copies. | **Not notarised by Apple,** so after each update macOS may ask for Accessibility again (see below). |
 | | Turning keep-awake off with the lid closed puts the Mac to sleep **immediately**. |
 
 ## Troubleshooting
 
-**⌥V or Finder ⌘X stopped working after an update.** macOS ties the Accessibility permission to the exact app build. Open **System Settings → Privacy & Security → Accessibility**, select **Owl Switch**, click **−** to remove it, then switch it on again (or right-click the owl → **Allow Shortcuts in Accessibility…**).
+**⌥V, ⌥D or Finder ⌘X stopped working after an update.** macOS ties the Accessibility permission to the exact app build. Open **System Settings → Privacy & Security → Accessibility**, select **Owl Switch**, click **−** to remove it, then switch it on again (or right-click the owl → **Allow Shortcuts in Accessibility…**).
 
 **Turn keep-awake off without the app:**
 
@@ -110,6 +111,7 @@ The build goes into `.build/`: `Owl Switch.app` (universal: arm64 + x86_64) and 
 | `Sources/KeepAwake.swift` | Keep-awake (`pmset disablesleep`) and its permission |
 | `Sources/ClipboardHistory.swift` | Clipboard history and the ⌥V menu |
 | `Sources/FinderCut.swift` | ⌘X / ⌘V file moving in Finder |
+| `Sources/ShowDesktop.swift` | ⌥D show desktop and bring windows back |
 | `Sources/KeyboardTap.swift` | The shared keyboard listener (runs on its own thread) |
 | `Sources/Accessibility.swift` | Accessibility permission helpers |
 | `Sources/Toast.swift` | The small "Cut 3 items" bubble |

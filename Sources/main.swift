@@ -5,10 +5,12 @@ import ServiceManagement
 //  • Keep awake: one click keeps the Mac running, even with the lid closed.
 //  • Clipboard history: Option+V (where the Windows key sits) lists the last 25 copies, like Win+V.
 //  • Finder cut & paste: Cmd+X then Cmd+V moves files, like Ctrl+X / Ctrl+V.
+//  • Show desktop: Option+D clears all windows off the screen and brings them back, like Win+D.
 
 enum Pref {
     static let clipboardHistory = "clipboardHistoryEnabled"
     static let finderCut = "finderCutEnabled"
+    static let showDesktop = "showDesktopEnabled"
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -18,16 +20,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let keyboard = KeyboardTap()
     private lazy var historyMenu = HistoryMenu(history: history, toast: toast)
     private lazy var finderCut = FinderCut(toast: toast)
+    private let showDesktop = ShowDesktop()
     private var statusItem: NSStatusItem!
     private var awake = false
     private var keyboardTimer: Timer?
 
     private var shortcutsWanted: Bool {
         defaults.bool(forKey: Pref.clipboardHistory) || defaults.bool(forKey: Pref.finderCut)
+            || defaults.bool(forKey: Pref.showDesktop)
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        defaults.register(defaults: [Pref.clipboardHistory: true, Pref.finderCut: true])
+        defaults.register(defaults: [Pref.clipboardHistory: true, Pref.finderCut: true, Pref.showDesktop: true])
 
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         if let button = statusItem.button {
@@ -42,7 +46,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         history.isEnabled = defaults.bool(forKey: Pref.clipboardHistory)
         history.start()
         let finderCut = self.finderCut
-        keyboard.handlers = [{ [weak self] in self?.handleHistoryKey($0) ?? false }, finderCut.handle]
+        keyboard.handlers = [{ [weak self] in self?.handleHistoryKey($0) ?? false }, finderCut.handle, showDesktop.handle]
         if shortcutsWanted && !Accessibility.isTrusted { Accessibility.prompt() }
         startKeyboardWhenAllowed()
     }
@@ -116,6 +120,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         menu.addItem(item("Cut & Paste Files in Finder   ⌘X ⌘V", #selector(toggleFinderCut),
                           on: defaults.bool(forKey: Pref.finderCut)))
+        menu.addItem(item("Show Desktop (minimize all)   ⌥D", #selector(toggleShowDesktop),
+                          on: defaults.bool(forKey: Pref.showDesktop)))
         if shortcutsWanted && !Accessibility.isTrusted {
             menu.addItem(item("⚠︎ Allow Shortcuts in Accessibility…", #selector(openAccessibility)))
         }
@@ -145,6 +151,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let on = !defaults.bool(forKey: Pref.clipboardHistory)
         defaults.set(on, forKey: Pref.clipboardHistory)
         history.isEnabled = on
+        if on { askForAccessibility() }
+    }
+
+    @objc private func toggleShowDesktop() {
+        let on = !defaults.bool(forKey: Pref.showDesktop)
+        defaults.set(on, forKey: Pref.showDesktop)
         if on { askForAccessibility() }
     }
 

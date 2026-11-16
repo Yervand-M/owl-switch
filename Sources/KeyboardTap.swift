@@ -1,7 +1,7 @@
 import AppKit
 
 enum Key {
-    static let x: CGKeyCode = 7, c: CGKeyCode = 8, v: CGKeyCode = 9   // physical keys, so any keyboard layout works
+    static let d: CGKeyCode = 2, x: CGKeyCode = 7, c: CGKeyCode = 8, v: CGKeyCode = 9   // physical keys, so any keyboard layout works
 
     static func code(_ e: CGEvent) -> CGKeyCode { CGKeyCode(e.getIntegerValueField(.keyboardEventKeycode)) }
     static func isRepeat(_ e: CGEvent) -> Bool { e.getIntegerValueField(.keyboardEventAutorepeat) != 0 }
